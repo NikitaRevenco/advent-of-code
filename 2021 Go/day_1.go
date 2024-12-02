@@ -12,26 +12,27 @@ func parse_input(input string) []string {
 	return strings.Split(strings.TrimSpace(input), "\n")
 }
 
+func string_to_int(input string) int {
+	int, err := strconv.Atoi(input)
+	if err != nil {
+		panic(fmt.Sprint("Expected item to be a number, but got: ", input))
+	}
+	return int
+}
+
 func day1_part1(input string) string {
 	parsed_input := parse_input(input)
 
 	var greater_than_prev_count int
 
-	for i, line := range parsed_input {
+	for i := range parsed_input {
 		// the first element does not have a previous value to compare to, so we skip
 		if i == 0 {
 			continue
 		}
 
-		prev, err := strconv.Atoi(parsed_input[i-1])
-		if err != nil {
-			panic(fmt.Sprint("Expected item to be a number, but got: ", parsed_input[i-1]))
-		}
-
-		current, err := strconv.Atoi((line))
-		if err != nil {
-			panic(fmt.Sprint("Expected item to be a number, but got: ", line))
-		}
+		prev := string_to_int(parsed_input[i-1])
+		current := string_to_int(parsed_input[i])
 
 		if current > prev {
 			greater_than_prev_count++
@@ -44,36 +45,26 @@ func day1_part1(input string) string {
 func day1_part2(input string) string {
 	parsed_input := parse_input(input)
 
-	var lol int
+	// the current window of 3 numbers summed together is greater than a window starting 1 index earlier
+	var window3_greater_than_prev_count int
 
 	for i := range parsed_input {
-		if i == 0 || i == 1 || i == 2 {
+		if i < 3 {
 			continue
 		}
-		first, err := strconv.Atoi(parsed_input[i])
-		if err != nil {
-			panic(fmt.Sprint("Expected item at position ", i, " to be an integer"))
-		}
-		second, err := strconv.Atoi(parsed_input[i-1])
-		if err != nil {
-			panic(fmt.Sprint("Expected item at position ", i, " to be an integer"))
-		}
-		third, err := strconv.Atoi(parsed_input[i-2])
-		if err != nil {
-			panic(fmt.Sprint("Expected item at position ", i, " to be an integer"))
-		}
-		fourth, err := strconv.Atoi(parsed_input[i-3])
-		if err != nil {
-			panic(fmt.Sprint("Expected item at position ", i, " to be an integer"))
-		}
-		sum := first + second + third
-		prev_sum := second + third + fourth
-		fmt.Println(first, second, third)
 
-		if sum > prev_sum {
-			lol++
+		first := string_to_int(parsed_input[i])
+		second := string_to_int(parsed_input[i-1])
+		third := string_to_int(parsed_input[i-2])
+		fourth := string_to_int(parsed_input[i-3])
+
+		window3_sum := first + second + third
+		prev_window3_sum := second + third + fourth
+
+		if window3_sum > prev_window3_sum {
+			window3_greater_than_prev_count++
 		}
 	}
 
-	return strconv.Itoa(lol)
+	return strconv.Itoa(window3_greater_than_prev_count)
 }
