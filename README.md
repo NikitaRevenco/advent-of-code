@@ -1,9 +1,9 @@
 # Nikita's solutions to the Advent of Code
 
-Every single year is done in a different language!
-Each year is in its separate folder.
+Rules:
 
-Currently I'm doing **Rust**.
+- No libraries. Only stdlib.
+- New year, new language. No repetition.
 
 ## 2024 Rust
 
@@ -32,14 +32,6 @@ Currently I'm doing **Rust**.
 - [ ] Day 23
 - [ ] Day 24
 - [ ] Day 25
-
-<details>
-
-<summary>
-
-To be done
-
-</summary>
 
 ## 2023 Haskell
 
@@ -209,7 +201,7 @@ To be done
 - [ ] Day 24
 - [ ] Day 25
 
-## 2017 Perl
+## 2017 Swift
 
 - [ ] Day 1
 - [ ] Day 2
@@ -292,5 +284,3 @@ To be done
 - [ ] Day 23
 - [ ] Day 24
 - [ ] Day 25
-
-</details>
