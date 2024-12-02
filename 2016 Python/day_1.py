@@ -91,13 +91,9 @@ def get_all_points_on_line(x1: int, y1: int, x2: int, y2: int) -> list[Coordinat
 
     range_of_values = range(start, end, step_direction)
 
-    # The value which is kept constant as we move across the line
     # nothing would change if we used x2 and y2 instead
-    constant = x1 if is_vertical_line else y1
-
     return [
-        (constant, value) if is_vertical_line else (value, constant)
-        for value in range_of_values
+        (x1, value) if is_vertical_line else (value, y1) for value in range_of_values
     ]
 
 
