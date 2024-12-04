@@ -1,5 +1,7 @@
 # Nikita's solutions to the Advent of Code
 
+This is the challenge I put on myself to test my abilities. The goal is to learn 10 **new** languages by using 1 language to solve 25 challenges from each Advent of Code year. I'm already pretty comfortable with TypeScript and Rust, so we won't do those. :-)
+
 Rules:
 
 - No libraries. Only stdlib.
@@ -7,7 +9,7 @@ Rules:
 
 |year|language|
 |----|-------|
-|2024|Rust (1/25)|
+|2024|PHP (0/25)|
 |2023|Haskell (0/25)|
 |2022|Elixir (0/25)|
 |2021|Go (1/25)|
