@@ -8,10 +8,8 @@ combineLeftRightDigits input = read [head digits, last digits]
   where
     digits = filter isDigit input
 
-transform f = show . sum . map f . lines
-
 part1 :: String -> String
-part1 = transform combineLeftRightDigits
+part1 = show . sum . map combineLeftRightDigits . lines
 
 numbers =
   [ ("nine", "9"),
@@ -36,4 +34,4 @@ replaceWordsWithNumbers ((word, digit) : otherDigits) text
 replaceWordsWithNumbers _ oneChar = oneChar
 
 part2 :: String -> String
-part2 = transform combineLeftRightDigits . replaceWordsWithNumbers numbers
+part2 = show . sum . map (combineLeftRightDigits . replaceWordsWithNumbers numbers) . lines
