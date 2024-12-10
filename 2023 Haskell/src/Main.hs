@@ -16,4 +16,4 @@ readInput day = do
 main :: IO ()
 main = do
   assertEq (Day1.part1 <$> readInput 1) "54388"
-  print "hi"
+  assertEq (Day1.part2 <$> readInput 1) "53515"
