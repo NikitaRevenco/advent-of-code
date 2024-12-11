@@ -3,6 +3,14 @@ module Lib where
 import Data.Char (isSpace)
 import Data.List (dropWhileEnd)
 
+maybeAt :: [a] -> Int -> Maybe a
+maybeAt [] _ = Nothing
+maybeAt (x : xs) 0 = Just x
+maybeAt (x : xs) index = maybeAt xs (index - 1)
+
+enumerate :: [a] -> [(Int, a)]
+enumerate = zip [0 ..]
+
 unwrap :: Maybe a -> a
 unwrap (Just a) = a
 unwrap Nothing = error "Cannot extract value from Nothing"

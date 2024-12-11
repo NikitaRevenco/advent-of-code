@@ -63,7 +63,7 @@ part1 = show . sum . map gameId . filter isValidGame . map parseGame . lines
 maxOf :: Round -> Round -> Round
 maxOf (Round r1 g1 b1) (Round r2 g2 b2) = Round (max r1 r2) (max g1 g2) (max b1 b2)
 
-{- A round with the fewest number of cubes required to play the entire game -}
+-- | A round with the fewest number of cubes required to play the entire game
 fewestCubes :: Game -> Round
 fewestCubes game = foldl maxOf (Round 0 0 0) $ rounds game
 
