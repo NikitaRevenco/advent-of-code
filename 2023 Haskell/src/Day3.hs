@@ -2,7 +2,7 @@ module Day3 where
 
 import Data.Char (isDigit)
 import Data.Maybe (catMaybes)
-import Debug.Trace (trace)
+import Debug.Trace (traceShow, traceShowId)
 import Lib (enumerate, maybeAt, slice)
 
 -- | Whether a character is considered a symbol
@@ -81,12 +81,13 @@ getAdjacentChars linesList (linenr, from, to) =
       leftRight = [before, after, topLeft, topRight, bottomLeft, bottomRight]
       topRow = slice from (to + 1) <$> lineAbove
       bottomRow = slice from (to + 1) <$> lineBelow
-   in concat $
-        catMaybes
-          [ topRow,
-            bottomRow,
-            sequence leftRight
-          ]
+   in concat
+        ( catMaybes
+            [ topRow,
+              bottomRow
+            ]
+        )
+        ++ catMaybes leftRight
 
 -- | A number is considered a part number if it's adjacent to a symbol
 --
@@ -125,7 +126,7 @@ addLineInfo =
 sumPartNumbers :: [LinenrNumberRange] -> [String] -> Int
 sumPartNumbers linenrrange strList = sum $ map f linenrrange
   where
-    f (linenr, from, to) = read (trace (slice from (to + 1) (strList !! linenr)) (slice from (to + 1) (strList !! linenr)))
+    f (linenr, from, to) = read (slice from (to + 1) (strList !! linenr))
 
 rolf = ".........................3.......................................94...............806....................596.........793...........186......\n.../..........*574.587..*........161......904.......412.........*.................*.................................=.....637.%......*......"
 
@@ -135,19 +136,25 @@ ahha = isPartNumber (lines rolf)
 
 linez = lines rolf
 
+strz = [".........................3.......................................94...............806....................596.........793...........186......", ".../..........*574.587..*........161......904.......412.........*.................*.................................=.....637.%......*......"]
+
+three :: (Int, Int, Int)
+three = (0, 25, 25)
+
 {-
 BUG: isPartNumber linez (0,82,84) => True (which corresponds to the "806")
 
 BUG: getAdjacentChars linez (0, 82, 84) => "*.." but should be "*......"
 
-BUG: getAdjacentChars [".........................3.......................................94...............806....................596.........793...........186......", ".../..........*574.587..*........161......904.......412.........*.................*.................................=.....637.%......*......"] (0, 25, 25)
+BUG: getAdjacentChars strz three
 "."
 should be
 "....*"
+
 -}
 
 part1 :: String -> String
-part1 lol = show $ sumPartNumbers (trace (show partNumbers) partNumbers) linez
+part1 lol = show $ sumPartNumbers partNumbers linez
   where
     numberPositions = addLineInfo $ map parseLine linez
     partNumbers = filter (isPartNumber linez) numberPositions
