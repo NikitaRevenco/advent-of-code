@@ -3,6 +3,7 @@ module Main where
 import qualified Day1
 import qualified Day2
 import qualified Day3
+import qualified Day4
 
 assertEq :: IO String -> String -> IO ()
 assertEq actual_io expected = do
@@ -22,6 +23,7 @@ main = do
   assertEq (Day2.part1 <$> readInput 2) "2679"
   assertEq (Day2.part2 <$> readInput 2) "77607"
   assertEq (Day3.part1 <$> readInput 3) "550064"
+  assertEq (Day4.part1 <$> readInput 4) "21919"
 
 -- a <- readInput 2
 -- putStr $ Day2.part2 a
