@@ -2,9 +2,6 @@ module Day3 where
 
 import Data.Char (isDigit)
 import Data.Maybe (catMaybes, mapMaybe)
--- import Debug.Trace (traceShowId)
-
-import Debug.Trace (traceShow, traceShowId)
 import Lib (enumerate, maybeAt, slice)
 
 -- | Whether a character is considered a symbol
@@ -200,18 +197,18 @@ positionsOfAllAsterisks =
     )
 
 someFn :: [String] -> [LinenrNumberRange] -> [[CharPosition]] -> [LinenrNumberRange]
-someFn allLines allGearNumbers =
+someFn _ allGearNumbers =
   concatMap
     (mapMaybe (\(linenr, asteriskIdx) -> if (linenr, asteriskIdx, asteriskIdx) `elem` allGearNumbers then Just (linenr, asteriskIdx, asteriskIdx) else Nothing))
 
-part2 :: String -> String
-part2 input = show $ sum $ map product lol
-  where
-    allGearNumbers = getAllGearNumbers $ lines input
-    -- (linenr, position, position) of each asterisk
-    asterisks = addLineInfo (positionsOfAllAsterisks (lines input))
-    -- position of each character surrounding every asterisk
-    asterisksSurroundings = map (getAdjacentCharPositions $ lines input) asterisks
-    possibleGearNumbers = map (someFn (lines input) (allGearNumbers)) asterisksSurroundings
-    gearNumbers = mapMaybe (getGearNumbers allGearNumbers) asterisks
-    lol = map (flip parsePartNumbers $ lines input) gearNumbers
+-- part2 :: String -> String
+-- part2 input = show $ sum $ map product lol
+--   where
+--     allGearNumbers = getAllGearNumbers $ lines input
+--     -- (linenr, position, position) of each asterisk
+--     asterisks = addLineInfo (positionsOfAllAsterisks (lines input))
+--     -- position of each character surrounding every asterisk
+--     asterisksSurroundings = map (getAdjacentCharPositions $ lines input) asterisks
+--     possibleGearNumbers = map (someFn (lines input) (allGearNumbers)) asterisksSurroundings
+--     gearNumbers = mapMaybe (getGearNumbers allGearNumbers) asterisks
+--     lol = map (flip parsePartNumbers $ lines input) gearNumbers
