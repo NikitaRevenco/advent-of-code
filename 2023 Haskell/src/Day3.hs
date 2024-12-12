@@ -1,8 +1,10 @@
 module Day3 where
 
 import Data.Char (isDigit)
-import Data.Maybe (catMaybes)
+import Data.Maybe (catMaybes, mapMaybe)
 -- import Debug.Trace (traceShowId)
+
+import Debug.Trace (traceShow, traceShowId)
 import Lib (enumerate, maybeAt, slice)
 
 -- | Whether a character is considered a symbol
@@ -20,10 +22,13 @@ import Lib (enumerate, maybeAt, slice)
 isSymbol :: Char -> Bool
 isSymbol ch = not (isDigit ch) && ch /= '.'
 
+isSymbolGear :: Char -> Bool
+isSymbolGear ch = not (isDigit ch) && ch /= '.' && ch /= '*'
+
 -- | (to, from) corresponding to the inclusive range that numbers span
 type NumberRange = (Int, Int)
 
--- | (line number, to, from)
+-- | (line number, from, to)
 type LinenrNumberRange = (Int, Int, Int)
 
 numberParser :: [NumberRange] -> (Int, Char) -> [NumberRange]
@@ -63,8 +68,8 @@ type CharPosition = (Int, Int)
 --
 -- >>> getAdjacentChars [ "A-----B", "@hello|", "C+++++D" ] $ getAdjacentCharPositions [ "A-----B", "@hello|", "C+++++D" ] (0, 1, 5)
 -- "@hello|AB"
-getAdjacentChars :: [String] -> [CharPosition] -> [Char]
-getAdjacentChars linesList = map (\(charLinenr, charIndex) -> (linesList !! charLinenr) !! charIndex)
+getAdjacentChars :: [String] -> [CharPosition] -> String
+getAdjacentChars linesList = map (\(charLinenr, charIndex) -> linesList !! charLinenr !! charIndex)
 
 -- | Obtains positions of chars around a slice in a list of strings
 --
@@ -135,12 +140,15 @@ getAdjacentCharPositions linesList (linenr, from, to) =
 isPartNumber :: [String] -> LinenrNumberRange -> Bool
 isPartNumber linesList numberRange = any isSymbol $ getAdjacentChars linesList $ getAdjacentCharPositions linesList numberRange
 
--- | Adds line number information to each number position and flattens
+isGearNumber :: [String] -> LinenrNumberRange -> Bool
+isGearNumber linesList numberRange = any isSymbolGear $ getAdjacentChars linesList $ getAdjacentCharPositions linesList numberRange
+
+-- | Adds line number information to each number position
 --
 -- # Examples
 --
 -- >>> addLineInfo [[(1, 1), (1, 1)], [(1, 1), (1, 1)]]
--- [(0, 1, 1), (0, 1, 1), (1, 1, 1), (1, 1, 1)]
+-- [[(0, 1, 1), (0, 1, 1)], [(1, 1, 1), (1, 1, 1)]]
 addLineInfo :: [[NumberRange]] -> [LinenrNumberRange]
 addLineInfo =
   concatMap
@@ -154,8 +162,56 @@ parsePartNumbers allNumbers allLines = map parsePartNumber allNumbers
   where
     parsePartNumber (linenr, from, to) = read (slice from (to + 1) (allLines !! linenr))
 
+parseGearNumbers :: [LinenrNumberRange] -> [String] -> [Int]
+parseGearNumbers allNumbers allLines = map parseGearNumber allNumbers
+  where
+    parseGearNumber (linenr, from, to) = read (slice from (to + 1) (allLines !! linenr))
+
 getAllPartNumbers :: [String] -> [LinenrNumberRange]
 getAllPartNumbers allLines = filter (isPartNumber allLines) $ addLineInfo $ map parseLine allLines
 
+getAllGearNumbers :: [String] -> [LinenrNumberRange]
+getAllGearNumbers allLines = filter (isGearNumber allLines) $ addLineInfo $ map parseLine allLines
+
 part1 :: String -> String
 part1 input = show $ sum $ parsePartNumbers (getAllPartNumbers $ lines input) $ lines input
+
+doesRangeOverlap :: LinenrNumberRange -> LinenrNumberRange -> Bool
+doesRangeOverlap (linenr1, from1, to1) (linenr2, from2, to2) = isSameLine && isWithinRange
+  where
+    isSameLine = linenr1 == linenr2
+    to2withinRange = to2 >= from1 && to2 <= to1
+    from2withinRange = from2 >= from1 && from2 <= to1
+    isWithinRange = to2withinRange || from2withinRange
+
+getGearNumbers :: [LinenrNumberRange] -> LinenrNumberRange -> Maybe [LinenrNumberRange]
+getGearNumbers partNumbers asterisk = if length gearNumbers == 2 then Just gearNumbers else Nothing
+  where
+    gearNumbers = filter (doesRangeOverlap asterisk) partNumbers
+
+positionsOfAllAsterisks :: [String] -> [[CharPosition]]
+positionsOfAllAsterisks =
+  map
+    ( mapMaybe
+        ( \(i, ch) ->
+            if ch == '*' then Just (i, i) else Nothing
+        )
+        . enumerate
+    )
+
+someFn :: [String] -> [LinenrNumberRange] -> [[CharPosition]] -> [LinenrNumberRange]
+someFn allLines allGearNumbers =
+  concatMap
+    (mapMaybe (\(linenr, asteriskIdx) -> if (linenr, asteriskIdx, asteriskIdx) `elem` allGearNumbers then Just (linenr, asteriskIdx, asteriskIdx) else Nothing))
+
+part2 :: String -> String
+part2 input = show $ sum $ map product lol
+  where
+    allGearNumbers = getAllGearNumbers $ lines input
+    -- (linenr, position, position) of each asterisk
+    asterisks = addLineInfo (positionsOfAllAsterisks (lines input))
+    -- position of each character surrounding every asterisk
+    asterisksSurroundings = map (getAdjacentCharPositions $ lines input) asterisks
+    possibleGearNumbers = map (someFn (lines input) (allGearNumbers)) asterisksSurroundings
+    gearNumbers = mapMaybe (getGearNumbers allGearNumbers) asterisks
+    lol = map (flip parsePartNumbers $ lines input) gearNumbers
