@@ -2,7 +2,6 @@ module Day3 where
 
 import Data.Char (isDigit)
 import Data.Maybe (catMaybes)
-import Debug.Trace (traceShow, traceShowId)
 import Lib (enumerate, maybeAt, slice)
 
 -- | Whether a character is considered a symbol
@@ -123,60 +122,14 @@ addLineInfo =
     )
     . enumerate
 
-sumPartNumbers :: [LinenrNumberRange] -> [String] -> Int
-sumPartNumbers linenrrange strList = sum $ map f linenrrange
+parsePartNumbers :: [LinenrNumberRange] -> [String] -> [Int]
+parsePartNumbers allNumbers allLines = map parsePartNumber allNumbers
   where
-    f (linenr, from, to) = read (slice from (to + 1) (strList !! linenr))
-
-rolf = ".........................3.......................................94...............806....................596.........793...........186......\n.../..........*574.587..*........161......904.......412.........*.................*.................................=.....637.%......*......"
-
--- haha = "467..114..\n...*......\n..35..633.\n......#...\n617*......\n.....+.58.\n..592.....\n......755.\n...$.*....\n.664.598..\n"
-
-ahha = isPartNumber (lines rolf)
-
-linez = lines rolf
-
-strz = [".........................3.......................................94...............806....................596.........793...........186......", ".../..........*574.587..*........161......904.......412.........*.................*.................................=.....637.%......*......"]
-
-three :: (Int, Int, Int)
-three = (0, 25, 25)
-
-{-
-BUG: isPartNumber linez (0,82,84) => True (which corresponds to the "806")
-
-BUG: getAdjacentChars linez (0, 82, 84) => "*.." but should be "*......"
-
-BUG: getAdjacentChars strz three
-"."
-should be
-"....*"
-
--}
+    parsePartNumber (linenr, from, to) = read (slice from (to + 1) (allLines !! linenr))
 
 part1 :: String -> String
-part1 lol = show $ sumPartNumbers partNumbers linez
-  where
-    numberPositions = addLineInfo $ map parseLine linez
-    partNumbers = filter (isPartNumber linez) numberPositions
-    linez = lines lol
-
--- data NumberSlice = NumberSlice {line :: Int, xrange :: (Int, Int)}
-
--- lol :: String -> [(Int, Char)]
--- lol = zip [0 ..]
-
--- lineNumberCoords :: [(Char, Int)] -> [(Int, Int)]
--- lineNumberCoords (x@(ch, num) : xs) = x : lineNumberCoords xs
-
--- -- getAdjacent :: [String] -> (Int, Int) -> [Char]
-
--- -- getAdjacent
-
--- -- isSymbolAdjacent :: String -> Int -> Bool
--- -- isSymbolAdjacent =
-
--- part1 :: String -> String
--- part1 = id
-
--- part2 :: String -> String
--- part2 = id
+part1 input =
+  let parsedNumbers = addLineInfo $ map parseLine allLines
+      partNumbers = filter (isPartNumber allLines) parsedNumbers
+      allLines = lines input
+   in show $ sum $ parsePartNumbers partNumbers allLines
