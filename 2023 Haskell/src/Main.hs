@@ -25,7 +25,8 @@ main = do
   assertEq (Day2.part2 <$> readInput 2) "77607"
   assertEq (Day3.part1 <$> readInput 3) "550064"
   assertEq (Day4.part1 <$> readInput 4) "21919"
-  assertEq (Day7.part1 <$> readInput 7) "1"
+  assertEq (Day7.part1 <$> readInput 7) "253205868"
+  assertEq (Day7.part2 <$> readInput 7) "253907829"
 
 -- a <- readInput 2
 -- putStr $ Day2.part2 a
