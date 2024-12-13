@@ -1,8 +1,6 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
-{-# HLINT ignore "Use head" #-}
 module Day7 where
 
+import Data.List (sort)
 import qualified Data.Map.Strict as Map
 import Lib (countOccurrences)
 
@@ -28,66 +26,53 @@ charToCard _ = error "Could not parse character as card"
 
 getHandType :: [Card] -> HandType
 getHandType cards
+  -- All 5 cards have the same label
   | length occurences == 1 = FiveOfKind
-  | length occurences == 5 = HighCard
-  | length occurences == 2
-      && ( (first == 4 && second == 1)
-             || (first == 1 && second == 4)
-         ) =
+  -- 4 cards share a label and 1 card has a different label
+  | length occurences == 2 && (4 `elem` counts && 1 `elem` counts) =
       FourOfKind
-  | length occurences == 2
-      && ( (first == 3 && second == 2)
-             || (first == 2 && second == 3)
-         ) =
+  -- 3 cards share a label and 2 cards have a different label
+  | length occurences == 2 && (2 `elem` counts && 3 `elem` counts) =
       FullHouse
-  | length occurences == 3
-      && ( (first == 3)
-             || (second == 3)
-             || (third == 3)
-         ) =
+  -- 3 cards share a label, 2 cards each have unique labels
+  | length occurences == 3 && (3 `elem` counts) =
       ThreeOfKind
-  | length occurences == 3
-      && ( (first == 2 && second == 2)
-             || (first == 2 && third == 2)
-             || (second == 2 && third == 2)
-         ) =
+  -- 2 cards share a label, 2 cards share a different label, 1 card has a different label
+  | length occurences == 3 && (1 `elem` counts && 2 `elem` counts) =
       TwoPair
-  | length occurences == 4
-      && elem 2 (map snd occurences) =
+  -- 2 cards share a label, 3 cards each have unique labels
+  | length occurences == 4 && 2 `elem` counts =
       OnePair
+  -- All 5 of the cards' labels are distinct
+  | length occurences == 5 = HighCard
   | otherwise = error "Card does not match any pattern"
   where
     occurences = Map.toList $ countOccurrences cards
-    first = snd (head occurences)
-    second = snd (occurences !! 1)
-    third = snd (occurences !! 2)
+    counts = map snd occurences
 
 data Hand = Hand
   { handType :: HandType,
     -- has 5 cards always
     cards :: [Card]
   }
+  deriving (Eq)
 
-compareHands :: Hand -> Hand -> Hand
-compareHands hand1@(Hand handType1 cards1) hand2@(Hand handType2 cards2)
-  | handType1 == handType2 =
-      if handType1 > handType2
-        then hand1
-        else hand2
-  | cards1 > cards2 = hand1
-  | otherwise = hand2
+instance Ord Hand where
+  compare hand1@(Hand handType1 cards1) hand2@(Hand handType2 cards2)
+    | handType1 == handType2 = compare cards1 cards2
+    | otherwise = compare handType1 handType2
 
-parseLine :: String -> ([Card], Int)
+parseLine :: String -> (Hand, Int)
 parseLine line =
   let both = words line
-      bid' = read (both !! 1) :: Int
-      cards = map charToCard (both !! 0)
-   in (cards, bid')
+      bid' = read $ both !! 1
+      cards = map charToCard $ head both
+      cardType = getHandType cards
+      hand = Hand cardType cards
+   in (hand, bid')
 
--- parseLine :: String ->
-
--- part1 :: String -> String
--- part1 input = map parseLine $ lines input
-
--- part2 :: String -> String
--- part2 = id
+part1 :: String -> String
+part1 input =
+  let sorted = map snd $ sort $ map parseLine $ lines input
+      totalWinnings = sum $ zipWith (*) sorted [1 ..]
+   in show totalWinnings
