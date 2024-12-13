@@ -2,6 +2,13 @@ module Lib where
 
 import Data.Char (isSpace)
 import Data.List (dropWhileEnd)
+import qualified Data.Map.Strict as Map
+
+-- | Counts how many times each item occurs in the list
+countOccurrences :: (Ord a) => [a] -> Map.Map a Int
+countOccurrences = foldl countOccurrence Map.empty
+  where
+    countOccurrence map item = Map.insertWith (+) item 1 map
 
 maybeAt :: [a] -> Int -> Maybe a
 maybeAt [] _ = Nothing

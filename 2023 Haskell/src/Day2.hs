@@ -8,13 +8,11 @@ data Round = Round
     green :: Int,
     blue :: Int
   }
-  deriving (Show)
 
 data Game = Game
   { gameId :: Int,
     rounds :: [Round]
   }
-  deriving (Show)
 
 {-
 Each round is of the form
@@ -28,9 +26,9 @@ parseRound gameRound =
       blue = getColor "blue"
     }
   where
-    lamb [count, color] = (color, read count)
-    lamb _ = error "Non-exhaustive pattern matching"
-    colors = map (lamb . words) $ splitByCh ',' gameRound
+    countAndColor [count, color] = (color, read count)
+    countAndColor _ = error "Non-exhaustive pattern matching"
+    colors = map (countAndColor . words) $ splitByCh ',' gameRound
     getColor color = lookup color colors `unwrapOr` 0
 
 {-
